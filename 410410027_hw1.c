@@ -65,7 +65,9 @@ int main(){
                         queue[++back] = j;
                     }else if(color_arr[j] == 'g'){
                         if(length_arr[j] == length_arr[queue[front + 1]] + 1){
-                            if(node_arr[predecessor_arr[j]].channel[j] < node_arr[queue[front + 1]].channel[j])
+                            int min_resource1 = (node_arr[predecessor_arr[j]].channel[j] < (node_arr[predecessor_arr[j]].mem_cnt / 2)) ? node_arr[predecessor_arr[j]].channel[j] : (node_arr[predecessor_arr[j]].mem_cnt / 2);
+                            int min_resource2 = (node_arr[queue[front + 1]].channel[j] < node_arr[queue[front + 1]].mem_cnt) ? node_arr[queue[front + 1]].channel[j] : node_arr[queue[front + 1]].mem_cnt;
+                            if(min_resource1 < min_resource2)
                             predecessor_arr[j] = queue[front + 1];
                         }
                     }
