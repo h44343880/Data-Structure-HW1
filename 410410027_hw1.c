@@ -31,26 +31,28 @@ int main(){
     }
 
     int * queue = (int*)malloc(sizeof(int) * nodes);
-    int front, back;
+    int front, back;// front為queue最前面元素的前一個位置的index, back為queue最後一個元素的index
 
     char * color_arr = (char*)malloc(sizeof(char) * nodes);
     int * predecessor_arr = (int*)malloc(sizeof(int) * nodes);
+    int * length_arr = (int*)malloc(sizeof(int) * nodes);
 
     int ** path_arr = (int**)calloc(requests, sizeof(int*));// 將可以用的path存起來
     int * accept_arr = (int*)calloc(requests, sizeof(int));// 紀錄那些request為accepted
     int accept_cnt = 0;// 紀錄accept request的數量    
 
     for(int i = 0; i < requests; i++){
-        // printf("%dth run\n", i);
         // 初始化
         front = -1;
         back = -1;
         for(int j = 0; j < nodes; j++){
             color_arr[j] = 'w';
             predecessor_arr[j] = -1;
+            length_arr[j] = 0;
         }
+
         // 執行bfs找出shortest path
-        queue[0] = req_start[i];
+        queue[0] = req_start[i];// 將起點node推入queue中
         color_arr[queue[0]] = 'g';
         back++;
         while(front != back){
@@ -58,8 +60,14 @@ int main(){
                 if(node_arr[queue[front + 1]].channel[j]){
                     if(color_arr[j] == 'w'){
                         color_arr[j] = 'g';
+                        length_arr[j] = length_arr[queue[front + 1]] + 1;;
                         predecessor_arr[j] = queue[front + 1];
                         queue[++back] = j;
+                    }else if(color_arr[j] == 'g'){
+                        if(length_arr[j] == length_arr[queue[front + 1]] + 1){
+                            if(node_arr[predecessor_arr[j]].channel[j] < node_arr[queue[front + 1]].channel[j])
+                            predecessor_arr[j] = queue[front + 1];
+                        }
                     }
                 }
             }
@@ -82,12 +90,12 @@ int main(){
             current = predecessor_arr[req_end[i]];// end的前一個node
             if(node_arr[req_end[i]].mem_cnt == 0 || node_arr[req_start[i]].mem_cnt == 0){
                 accept = 0;
-                printf("%d:front\n", i);
+                // printf("%d:front\n", i);
             }else{
                 while(predecessor_arr[current] != -1){
                     if(node_arr[current].mem_cnt < 2){
                         accept = 0;
-                        printf("%d:back, cnt: %d, id: %d\n", i, node_arr[current].mem_cnt, current);
+                        // printf("%d:back, cnt: %d, id: %d\n", i, node_arr[current].mem_cnt, current);
                         break;
                     }
                     current = predecessor_arr[current];
